@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import api from '../services/api'
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -41,16 +43,21 @@ function Login() {
         />
 
         <input
-          className="form-control mb-3"
+          className="password"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="btn btn-primary w-100">
+        <button className="login">
           Login
         </button>
+
+        <p className="new_user">
+  New user? <Link to="/signup">Create an account</Link>
+</p>
+
       </form>
     </div>
   )

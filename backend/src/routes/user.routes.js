@@ -1,22 +1,39 @@
+
 const express = require("express");
 const auth = require("../middleware/auth");
-const User = require("../models/User");
+const Task = require("../models/Task");
 
 const router = express.Router();
 
-router.get("/me", auth, async (req, res) => {
-  const user = await User.findById(req.user.id).select("-password");
-  res.json(user);
+
+router.post("/", auth, async (req, res) => {
+  const task = await Task.create({
+    title: req.body.title,
+    user: req.user.id
+  });
+  res.json(task);
 });
 
-router.put("/me", auth, async (req, res) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user.id,
+
+router.get("/", auth, async (req, res) => {
+  const tasks = await Task.find({ user: req.user.id });
+  res.json(tasks);
+});
+
+
+router.put("/:id", auth, async (req, res) => {
+  const updated = await Task.findByIdAndUpdate(
+    req.params.id,
     req.body,
     { new: true }
-  ).select("-password");
+  );
+  res.json(updated);
+});
 
-  res.json(updatedUser);
+
+router.delete("/:id", auth, async (req, res) => {
+  await Task.findByIdAndDelete(req.params.id);
+  res.json({ message: "Task deleted" });
 });
 
 module.exports = router;

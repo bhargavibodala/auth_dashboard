@@ -1,3 +1,4 @@
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -5,28 +6,26 @@ const User = require("../models/User");
 
 const router = express.Router();
 
+
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "All fields required" });
   }
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
+  const exists = await User.findOne({ email });
+  if (exists) {
     return res.status(400).json({ message: "Email already exists" });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashed = await bcrypt.hash(password, 10);
 
-  await User.create({
-    name,
-    email,
-    password: hashedPassword
-  });
+  await User.create({ name, email, password: hashed });
 
   res.json({ message: "User registered successfully" });
 });
+
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -36,8 +35,8 @@ router.post("/login", async (req, res) => {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
